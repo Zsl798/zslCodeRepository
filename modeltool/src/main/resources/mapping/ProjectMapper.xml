@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lowcode.modeltool.apimodel.projectInfo.mapper.ProjectMapper">
+    <select id="queryProjectInfoById" parameterType="java.lang.String" resultType="com.lowcode.modeltool.apimodel.projectInfo.model.ProjectInfoVO" >
+        SELECT T1.* FROM bdap_model_project_info T1
+        WHERE T1.PROJECT_ID = #{id}
+    </select>
+</mapper>
