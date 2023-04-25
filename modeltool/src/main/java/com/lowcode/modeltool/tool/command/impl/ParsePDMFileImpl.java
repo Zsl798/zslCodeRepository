@@ -15,6 +15,7 @@
  */
 package com.lowcode.modeltool.tool.command.impl;
 
+import com.lowcode.modeltool.apimodel.exectool.util.FileUtils;
 import com.lowcode.modeltool.tool.command.Command;
 import com.lowcode.modeltool.tool.command.ExecResult;
 import com.lowcode.modeltool.tool.command.kit.ConnParseKit;
@@ -35,6 +36,7 @@ import org.dom4j.tree.FlyweightProcessingInstruction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.*;
@@ -430,5 +432,86 @@ public class ParsePDMFileImpl implements Command<ExecResult> {
             return dataType.substring(0,dataType.indexOf("("));
         }
         return dataType;
+    }
+
+    public ExecResult parsePDMFile(MultipartFile file) {
+        //上传文件
+        String resultPath = "";
+        try {
+            resultPath = FileUtils.uploadFile(file,"modelInput","dataInput");
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+
+        SAXReader reader = new SAXReader();
+        File inFile = new File(resultPath);
+
+        ExecResult ret = new ExecResult();
+        try {
+            Document document = reader.read(inFile);
+            List<Node> contentList = document.content();
+            if(contentList == null || contentList.size() == 0){
+                throw new IllegalStateException("文件"+file.getOriginalFilename()+"格式不正确");
+            }
+            FlyweightProcessingInstruction declearNode = (FlyweightProcessingInstruction)contentList.get(0);
+            String projectName = declearNode.getValue("Name");
+            String version = declearNode.getValue("version");
+            if(version.length()>3){
+                version = version.substring(0,4);
+            }
+            //低于16.5版本
+//            if(version.compareTo("16.5") < 0){
+//                throw new IllegalStateException("文件["+file.getOriginalFilename()+"]版本为["+version+"],不正确，请使用PowerDesigner-16.5以上版本的结果文件，如果没有，请你先用16.5的打开旧文件后另存为。");
+//            }
+
+
+            List<Node> domainNodeList = document.selectNodes("/Model/o:RootObject/c:Children/o:Model/c:Domains/o:PhysicalDomain");
+//            List<Node> tableNodeList = document.selectNodes("/Model/o:RootObject/c:Children/*/c:Tables/o:Table");
+            List<Node> tableNodeList = document.selectNodes("//c:Tables/o:Table");  //使用通配置查找所有表
+
+            List<PDTable> tableList = new ArrayList<>();
+            List<PDDomain> domainList = new ArrayList<>();
+            for(Node domainNode : domainNodeList){
+                PDDomain domain = createDomain(domainNode);
+                if(domain == null){
+                    continue;
+                }
+                domainList.add(domain);
+            }
+            for(Node tableNode : tableNodeList){
+                PDTable table = createTable(tableNode,domainList);
+                if(table == null){
+                    continue;
+                }
+                tableList.add(table);
+            }
+
+
+            List<TableEntity> tableEntities = new ArrayList<>();
+            List<Domain> domains = new ArrayList<Domain>();
+
+            //填充模型数据
+            fillTableEntities(tableList,tableEntities);
+            fillDomains(domainList,domains);
+
+            ret.setBody(new HashMap<String,Object>(){{
+                put("projectName",projectName);
+                put("tables",tableEntities);
+                put("domains",domains);
+            }});
+            ret.setStatus(ExecResult.SUCCESS);
+
+            FileUtils.cleanTempFiles(resultPath);
+        } catch (DocumentException e) {
+            String message = e.getMessage();
+            if(StringKit.isBlank(message)){
+                message = e.toString();
+            }
+            ret.setBody(message);
+            ret.setStatus(ExecResult.FAILED);
+            logger.error("",e);
+        }
+        return ret;
+
     }
 }

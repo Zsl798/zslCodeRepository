@@ -29,6 +29,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,4 +99,15 @@ public class ParseExcelFileImpl implements Command<ExecResult> {
             parseExcel.parseToTableEntities(workBook,tableEntities);
         }
     }
+
+    public ExecResult parseExcelFile(MultipartFile file) {
+        //todo
+        return new ExecResult();
+    }
+
+
+
+
+
+
 }

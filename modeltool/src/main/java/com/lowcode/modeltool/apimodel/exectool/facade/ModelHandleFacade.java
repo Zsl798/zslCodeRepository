@@ -8,7 +8,7 @@ import com.lowcode.modeltool.tool.command.ModelCommandFactory;
 import com.lowcode.modeltool.tool.command.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -39,7 +39,6 @@ public class ModelHandleFacade {
      * @return execResult
      */
     @SuppressWarnings("unchecked")
-    @Transactional(rollbackFor = Exception.class)
     public ExecResult pingLoadDriver(Map<String, String> params) {
         Command<ExecResult> command = modelCommandFactory.getCommand(PingLoadDriverClassImpl.class);
         ExecResult exec = command.exec(params);
@@ -52,7 +51,6 @@ public class ModelHandleFacade {
      * @param params
      * @return execResult
      */
-    @Transactional(rollbackFor = Exception.class)
     public ExecResult reverseGetAllDBTablesList(Map<String, String> params) {
         Command<ExecResult> command = modelCommandFactory.getCommand(DBReverseGetAllTablesListImpl.class);
         ExecResult exec = command.exec(params);
@@ -61,26 +59,12 @@ public class ModelHandleFacade {
 
     /**
      * 获取指定数据表DDL
-     *
+     * 数据库逆向，解析表清单的字段以及索引
      * @param params
      * @return execResult
      */
-    @Transactional(rollbackFor = Exception.class)
     public ExecResult reverseGetDBTableDDL(Map<String, String> params) {
         Command<ExecResult> command = modelCommandFactory.getCommand(DBReverseGetTableDDLImpl.class);
-        ExecResult exec = command.exec(params);
-        return exec;
-    }
-
-    /**
-     * 将DDL语句解析为表结构
-     *
-     * @param params
-     * @return execResult
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ExecResult parseDDLToTableImpl(Map<String, String> params) {
-        Command<ExecResult> command = modelCommandFactory.getCommand(ParseDDLToTableImpl.class);
         ExecResult exec = command.exec(params);
         return exec;
     }
@@ -91,7 +75,6 @@ public class ModelHandleFacade {
      * @param params
      * @return execResult
      */
-    @Transactional(rollbackFor = Exception.class)
     public ExecResult parsePDMFile(Map<String, String> params) {
         Command<ExecResult> command = modelCommandFactory.getCommand(ParsePDMFileImpl.class);
         ExecResult exec = command.exec(params);
@@ -99,12 +82,60 @@ public class ModelHandleFacade {
     }
 
     /**
+     * 解析PDM文件
+     *
+     * @param file
+     * @return
+     */
+    public ExecResult parsePDMMultipartFile(MultipartFile file) {
+        ParsePDMFileImpl command = (ParsePDMFileImpl) modelCommandFactory.getCommand(ParsePDMFileImpl.class);
+        ExecResult exec = command.parsePDMFile(file);
+        return exec;
+    }
+
+    /**
+     * 解析excel文件
+     *
+     * @param params
+     * @return execResult
+     */
+    public ExecResult parseExcelFile(Map<String, String> params) {
+        Command<ExecResult> command = modelCommandFactory.getCommand(ParseExcelFileImpl.class);
+        ExecResult exec = command.exec(params);
+        return exec;
+    }
+
+    /**
+     * 解析excel文件
+     *
+     * @param file
+     * @return
+     */
+    public ExecResult parseExcelMultipartFile(MultipartFile file) {
+        ParseExcelFileImpl command = (ParseExcelFileImpl) modelCommandFactory.getCommand(ParseExcelFileImpl.class);
+        ExecResult exec = command.parseExcelFile(file);
+        return exec;
+    }
+
+    /**
+     * 解析http请求
+     *
+     * @param params
+     * @return execResult
+     */
+    public ExecResult httpParser(Map<String, String> params) {
+        Command<ExecResult> command = modelCommandFactory.getCommand(HttpParserImpl.class);
+        ExecResult exec = command.exec(params);
+        return exec;
+    }
+
+
+    /**
      * 生成WORD文档
      *
      * @param params
      * @return execResult
      */
-    @Transactional(rollbackFor = Exception.class)
     public ExecResult genDocx(Map<String, String> params) {
         Command<ExecResult> command = modelCommandFactory.getCommand(GenDocxImpl.class);
         ExecResult exec = command.exec(params);
@@ -118,7 +149,6 @@ public class ModelHandleFacade {
      * @param path
      * @return 文件路径
      */
-    @Transactional(rollbackFor = Exception.class)
     public String createDocFile(ProjectInfoVO projectInfoVO, String path) {
         String fullPath = path + File.separator + projectInfoVO.getProjectName() + ".docx";
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -141,7 +171,14 @@ public class ModelHandleFacade {
         return fullPath;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+
+    /**
+     * 创建base64图片
+     *
+     * @param imgData，path
+     * @param path
+     * @return 文件路径
+     */
     public void createImgFile(List<Map<String, String>> imgData, String path) {
         for (Map<String, String> object : imgData) {
             String fileName = (String) object.get("fileName");
@@ -172,5 +209,20 @@ public class ModelHandleFacade {
         }
         return imgFile;
     }
+
+    /**
+     * 将DDL语句解析为表结构
+     *
+     * @param params
+     * @return execResult
+     */
+    public ExecResult parseDDLToTable(Map<String, String> params) {
+        Command<ExecResult> command = modelCommandFactory.getCommand(ParseDDLToTableImpl.class);
+        ExecResult exec = command.exec(params);
+        return exec;
+    }
+
+
+
 
 }
