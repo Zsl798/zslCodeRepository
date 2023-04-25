@@ -7,8 +7,11 @@ import com.lowcode.modeltool.apimodel.exectool.util.FileUtils;
 import com.lowcode.modeltool.apimodel.projectInfo.facade.ProjectInfoFacade;
 import com.lowcode.modeltool.apimodel.projectInfo.model.ProjectInfoVO;
 import com.lowcode.modeltool.tool.command.ExecResult;
+import com.lowcode.modeltool.tool.fisok.raw.kit.JdbcKit;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +23,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 元数据建模Controller
@@ -33,7 +35,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/model")
 public class ModelHandleController {
-
+    protected Logger logger = LoggerFactory.getLogger(ModelHandleController.class);
     @Autowired
     private ModelHandleFacade modelHandleFacade;
 
@@ -217,26 +219,25 @@ public class ModelHandleController {
     @ApiOperation("传入驱动测试数据库连接")
     @PostMapping("/connPingTest")
     public ReturnResultHelper connPingTest(@RequestBody Map<String, String> params) {
+        ExecResult ret = new ExecResult();
         if(!params.containsKey("driverTest")){
-            return new ReturnResultHelper(false);
+            ret.setStatus(ExecResult.FAILED);
+            ret.setBody("driverTest不存在");
+            return new ReturnResultHelper(true,ret);
         }
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(params.get("driverTest"));
+            ret.setStatus(ExecResult.SUCCESS);
+            ret.setBody("连接成功");
         } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return new ReturnResultHelper(false);
+            ret.setStatus(ExecResult.FAILED);
+            ret.setBody("连接失败!出错消息：" + throwables.getMessage());
+            logger.error("", throwables);
         }finally {
-            if(Objects.nonNull(conn)){
-                try {
-                    conn.close();
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                    return new ReturnResultHelper(false);
-                }
-            }
+            JdbcKit.close(conn);
         }
-        return new ReturnResultHelper(true,conn);
+        return new ReturnResultHelper(true,ret);
     }
 
 
