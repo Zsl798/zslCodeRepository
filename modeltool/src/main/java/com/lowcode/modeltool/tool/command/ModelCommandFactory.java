@@ -28,13 +28,20 @@ public class ModelCommandFactory {
     private GenDocxImpl genDocxImpl;
 
     @Autowired
+    private HttpParserImpl httpParserImpl;
+
+    @Autowired
     private ParseDDLToTableImpl parseDDLToTableImpl;
+
+    @Autowired
+    private ParseExcelFileImpl parseExcelFileImpl;
 
     @Autowired
     private ParsePDMFileImpl parsePDMFileImpl;
 
     @Autowired
     private PingLoadDriverClassImpl pingLoadDriverClassImpl;
+
 
     public Command getCommand(Class queryClazz) {
         if (queryClazz.isAssignableFrom(DBReverseGetAllTablesListImpl.class)) {
@@ -49,6 +56,10 @@ public class ModelCommandFactory {
             return parsePDMFileImpl;
         }else if(queryClazz.isAssignableFrom(PingLoadDriverClassImpl.class)){
             return pingLoadDriverClassImpl;
+        }else if(queryClazz.isAssignableFrom(ParseExcelFileImpl.class)){
+            return parseExcelFileImpl;
+        }else if(queryClazz.isAssignableFrom(HttpParserImpl.class)){
+            return httpParserImpl;
         }
         return null;
     }

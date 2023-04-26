@@ -102,7 +102,7 @@ public class ModelHandleController {
      * @param pdmFile
      * @return resultHelper
      */
-    @ApiOperation("解析PDM文件")
+    @ApiOperation("解析PDM文件（上传文件流）")
     @PostMapping("/parsePDMMultipartFile")
     public ReturnResultHelper parsePDMMultipartFile(@RequestParam("pdmFile") MultipartFile pdmFile) {
         ExecResult execResult = modelHandleFacade.parsePDMMultipartFile(pdmFile);
