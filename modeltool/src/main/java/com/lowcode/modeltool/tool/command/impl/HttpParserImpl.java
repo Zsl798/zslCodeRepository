@@ -1,6 +1,5 @@
 package com.lowcode.modeltool.tool.command.impl;
 
-import com.lowcode.modeltool.tool.command.Command;
 import com.lowcode.modeltool.tool.command.ExecResult;
 import com.lowcode.modeltool.tool.fisok.raw.kit.IOKit;
 import com.lowcode.modeltool.tool.fisok.raw.kit.JSONKit;
@@ -25,7 +24,7 @@ import java.util.Map;
  * @desc : Http解析
  */
 @Component
-public class HttpParserImpl implements Command<ExecResult> {
+public class HttpParserImpl extends AbstractDBCommand<ExecResult> {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override

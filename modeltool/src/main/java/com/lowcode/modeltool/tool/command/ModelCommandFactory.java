@@ -5,6 +5,10 @@ import com.lowcode.modeltool.tool.command.impl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  *
@@ -17,7 +21,6 @@ import org.springframework.stereotype.Component;
  */
 @Component("ModelCommandFactory")
 public class ModelCommandFactory {
-
     @Autowired
     private DBReverseGetAllTablesListImpl dBReverseGetAllTablesListImpl;
 
@@ -42,25 +45,22 @@ public class ModelCommandFactory {
     @Autowired
     private PingLoadDriverClassImpl pingLoadDriverClassImpl;
 
+    private static final Map<Class,AbstractDBCommand> classMap  = new HashMap<>();
+
+    @PostConstruct
+    public void init() {
+        classMap.put(DBReverseGetAllTablesListImpl.class,dBReverseGetAllTablesListImpl);
+        classMap.put(DBReverseGetTableDDLImpl.class,dBReverseGetTableDDLImpl);
+        classMap.put(GenDocxImpl.class,genDocxImpl);
+        classMap.put(ParseDDLToTableImpl.class,parseDDLToTableImpl);
+        classMap.put(ParsePDMFileImpl.class,parsePDMFileImpl);
+        classMap.put(PingLoadDriverClassImpl.class,pingLoadDriverClassImpl);
+        classMap.put(ParseExcelFileImpl.class,parseExcelFileImpl);
+        classMap.put(HttpParserImpl.class,httpParserImpl);
+    }
 
     public Command getCommand(Class queryClazz) {
-        if (queryClazz.isAssignableFrom(DBReverseGetAllTablesListImpl.class)) {
-            return dBReverseGetAllTablesListImpl;
-        }else if(queryClazz.isAssignableFrom(DBReverseGetTableDDLImpl.class)){
-            return dBReverseGetTableDDLImpl;
-        }else if(queryClazz.isAssignableFrom(GenDocxImpl.class)){
-            return genDocxImpl;
-        }else if(queryClazz.isAssignableFrom(ParseDDLToTableImpl.class)){
-            return parseDDLToTableImpl;
-        }else if(queryClazz.isAssignableFrom(ParsePDMFileImpl.class)){
-            return parsePDMFileImpl;
-        }else if(queryClazz.isAssignableFrom(PingLoadDriverClassImpl.class)){
-            return pingLoadDriverClassImpl;
-        }else if(queryClazz.isAssignableFrom(ParseExcelFileImpl.class)){
-            return parseExcelFileImpl;
-        }else if(queryClazz.isAssignableFrom(HttpParserImpl.class)){
-            return httpParserImpl;
-        }
-        return null;
+        return classMap.get(queryClazz);
     }
 }
+

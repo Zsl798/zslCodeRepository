@@ -16,7 +16,6 @@
 package com.lowcode.modeltool.tool.command.impl;
 
 import com.lowcode.modeltool.apimodel.exectool.util.FileUtils;
-import com.lowcode.modeltool.tool.command.Command;
 import com.lowcode.modeltool.tool.command.ExecResult;
 import com.lowcode.modeltool.tool.command.kit.ConnParseKit;
 import com.lowcode.modeltool.tool.fisok.raw.kit.StringKit;
@@ -49,7 +48,7 @@ import java.util.*;
  * @desc : 解析PDM文件
  */
 @Component
-public class ParsePDMFileImpl implements Command<ExecResult> {
+public class ParsePDMFileImpl extends AbstractDBCommand<ExecResult>  {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override

@@ -22,7 +22,6 @@ import com.deepoove.poi.data.PictureRenderData;
 import com.deepoove.poi.data.PictureType;
 import com.deepoove.poi.plugin.bookmark.BookmarkRenderPolicy;
 import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
-import com.lowcode.modeltool.tool.command.Command;
 import com.lowcode.modeltool.tool.command.ExecResult;
 import com.lowcode.modeltool.tool.fisok.raw.kit.FileKit;
 import com.lowcode.modeltool.tool.fisok.raw.kit.IOKit;
@@ -48,7 +47,7 @@ import java.util.Map;
  * @desc : 生成WORD文件
  */
 @Component
-public class GenDocxImpl implements Command<ExecResult> {
+public class GenDocxImpl extends AbstractDBCommand<ExecResult> {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override

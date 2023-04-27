@@ -15,7 +15,6 @@
  */
 package com.lowcode.modeltool.tool.command.impl;
 
-import com.lowcode.modeltool.tool.command.Command;
 import com.lowcode.modeltool.tool.command.ExecResult;
 import com.lowcode.modeltool.tool.command.impl.excel.ExcelCommonUtils;
 import com.lowcode.modeltool.tool.command.impl.excel.ParseExcelAsSimple;
@@ -45,7 +44,7 @@ import java.util.Map;
  * @desc : 解析EXCEL文件
  */
 @Component
-public class ParseExcelFileImpl implements Command<ExecResult> {
+public class ParseExcelFileImpl extends AbstractDBCommand<ExecResult> {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
