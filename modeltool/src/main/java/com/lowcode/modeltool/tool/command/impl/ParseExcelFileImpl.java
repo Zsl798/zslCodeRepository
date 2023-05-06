@@ -89,7 +89,7 @@ public class ParseExcelFileImpl extends AbstractDBCommand<ExecResult> {
         String firstHeaderCellText = ExcelCommonUtils.getCellValue(sheet.getRow(1).getCell(0)).strValue("");
 
         if(firstHeaderCellText.indexOf("主题")>=0){
-            //主题模式
+            // 主题模式1
             ParseExcelAsTopic parseExcel = new ParseExcelAsTopic();
             parseExcel.parseToTableEntities(workBook,tableEntities,groupTopicList);
         }else{
