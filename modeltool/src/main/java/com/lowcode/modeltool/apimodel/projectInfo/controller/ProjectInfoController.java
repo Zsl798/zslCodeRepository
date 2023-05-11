@@ -7,10 +7,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * 建模项目信息表Controller实现类
@@ -33,8 +32,8 @@ public class ProjectInfoController{
      * @return ProjectInfoVO
      */
     @ApiOperation("根据建模ID查询建模对象")
-    @GetMapping("/queryProjectInfoById/{id}")
-    public ProjectInfoVO queryProjectInfoById(@PathVariable("id") String id) {
+    @GetMapping("/loadById/{id}")
+    public ProjectInfoVO loadById(@PathVariable("id") String id) {
         return projectInfoFacade.queryProjectInfoById(id);
     }
 
@@ -44,5 +43,17 @@ public class ProjectInfoController{
     @GetMapping("/hello/{name}")
     public String home(@PathVariable("name")String name) {
         return "hi " + name + " ,this is EurekaClient , i am from port:" + port;
+    }
+
+    /**
+     * 带分页查询项目列表
+     *
+     * @param projectInfo 项目信息
+     * @return 项目查询结果
+     */
+    @ApiOperation("带分页查询项目列表")
+    @PostMapping("/queryProjectListByPage")
+    public Map<String,Object> queryProjectListByPage(@RequestBody ProjectInfoVO projectInfo) {
+        return projectInfoFacade.queryProjectListByPage(projectInfo);
     }
 }

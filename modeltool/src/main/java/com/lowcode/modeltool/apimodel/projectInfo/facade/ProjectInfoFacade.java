@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 建模项目信息表service
  * @author zhangsonglin
@@ -33,6 +37,19 @@ public class ProjectInfoFacade{
     @Transactional(rollbackFor = Exception.class)
     public ProjectInfoVO queryProjectInfoById(String id) {
         return projectMapper.queryProjectInfoById(id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Map<String, Object> queryProjectListByPage(ProjectInfoVO projectInfo) {
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        int iCount = projectMapper.queryProjectListCount(projectInfo);
+        List<ProjectInfoVO> lst=null;
+        if(iCount>0) {
+            lst=projectMapper.queryProjectList(projectInfo);
+        }
+        dataMap.put("list", lst);
+        dataMap.put("count", iCount);
+        return dataMap;
     }
 
 

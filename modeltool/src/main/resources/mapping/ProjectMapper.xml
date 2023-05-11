@@ -1,8 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lowcode.modeltool.apimodel.projectInfo.mapper.ProjectMapper">
+    <sql id = "projectInfo_default_query_condition" >
+        <if test = "projectId != null and projectId != '' ">
+            AND (T1.PROJECT_ID = #{projectId})
+        </if>
+        <if test = "projectName != null and projectName != '' ">
+            AND (T1.PROJECT_NAME = #{projectName})
+        </if>
+        <if test = "remark != null and remark != '' ">
+            AND (T1.REMARK = #{remark})
+        </if>
+        <if test = "content != null and content != '' ">
+            AND (T1.CONTENT = #{content})
+        </if>
+        <if test = "createId != null and createId != '' ">
+            AND (T1.CREATE_ID = #{createId})
+        </if>
+        <if test = "createTime != null">
+            AND (T1.CREATE_TIME = #{createTime})
+        </if>
+        <if test = "updateId != null and updateId != '' ">
+            AND (T1.UPDATE_ID = #{updateId})
+        </if>
+        <if test = "updateTime != null">
+            AND (T1.UPDATE_TIME = #{updateTime})
+        </if>
+    </sql>
+
     <select id="queryProjectInfoById" parameterType="java.lang.String" resultType="com.lowcode.modeltool.apimodel.projectInfo.model.ProjectInfoVO" >
         SELECT T1.* FROM bdap_model_project_info T1
         WHERE T1.PROJECT_ID = #{id}
+    </select>
+
+    <select id="queryProjectListCount" parameterType="com.lowcode.modeltool.apimodel.projectInfo.model.ProjectInfoVO" resultType="int" >
+        SELECT COUNT(1) FROM bdap_model_project_info T1
+        <where>
+            <include refid="projectInfo_default_query_condition" />
+        </where>
+    </select>
+
+    <select id="queryProjectList" parameterType="com.lowcode.modeltool.apimodel.projectInfo.model.ProjectInfoVO" resultType="com.lowcode.modeltool.apimodel.projectInfo.model.ProjectInfoVO" >
+        SELECT T1.project_id,T1.project_name,T1.remark,T1.create_time,T1.update_time FROM bdap_model_project_info T1
+        <where>
+            <include refid="projectInfo_default_query_condition" />
+        </where>
+        ORDER BY T1.update_time DESC
     </select>
 </mapper>
